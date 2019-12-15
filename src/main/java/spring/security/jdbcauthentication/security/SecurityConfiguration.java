@@ -27,19 +27,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
-                .withDefaultSchema()
-                .withUser(
-                        User.withUsername("user")
-                        .password("pass")
-                        .roles("USER")
-                )
-                .withUser(
-                        User.withUsername("admin")
-                        .password("pass")
-                        .roles("ADMIN")
-                );
+                .usersByUsernameQuery("select username , password , enabled "
+                + "from users "
+                + "where username = ?")
+                .authoritiesByUsernameQuery("select username , authority "
+                + "from authorities "
+                + "where username = ?");
         //^^ spring will create for us user table with roles...
         //^^ we are hardcoding users for learning purposes
+        //^^ we are writting own queries if we are using custom created tables..
+        //^^ this are the defaults values.. but we can ovveride them how we would like to..
     }
 
     @Override
